@@ -14,6 +14,7 @@ pipeline {
         }
         stage("Execute") {
             steps {
+                sh 'echo "Executing Workflow..."'
                 sh '/home/krisk918/n8n/packages/cli/bin/n8n execute --file workflow.json'
             }
         }
