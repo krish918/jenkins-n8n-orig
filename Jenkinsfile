@@ -1,21 +1,26 @@
 pipeline {
     agent any
     stages {
-        stage("GetVersion") {
+        stage("InstallN8N") {
             steps {
-                sh '/home/krisk918/n8n/packages/cli/bin/n8n --version'
+                sh 'npm install n8n -g'
+            }
+        }
+        stage("CheckVersion") {
+            steps {
+                sh 'n8n --version'
             }
         }
         stage("ImportCredentials") {
             steps {
-                sh '/home/krisk918/n8n/packages/cli/bin/n8n import:credentials --input=credentials.json'
+                sh 'n8n import:credentials --input=credentials.json'
                 sh 'cp config /var/lib/jenkins/.n8n/'
             }
         }
         stage("Execute") {
             steps {
                 sh 'echo "Executing Workflow..."'
-                sh '/home/krisk918/n8n/packages/cli/bin/n8n execute --file workflow.json'
+                sh 'n8n execute --file workflow.json'
             }
         }
     }
