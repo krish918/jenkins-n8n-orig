@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage("InstallN8N") {
             steps {
-                sh 'npm install n8n -g'
+                sh 'echo "intel.1234" | sudo -S npm install n8n -g'
             }
         }
         stage("CheckVersion") {
