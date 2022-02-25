@@ -1,26 +1,50 @@
 pipeline {
     agent any
     stages {
-        stage("InstallN8N") {
+        stage("FetchN8N") {
             steps {
-                sh 'echo "intel.1234" | sudo -S npm install n8n -g'
+                dir('/var/lib/jenkins/workspace') {
+                    sh 'git clone https://github.com/krish918/n8n.git'
+                }
+            }
+        }
+        stage("InstallBuildTools") {
+            steps {
+                dir('/var/lib/jenkins/workspace/n8n') {
+                    sh 'sudo apt-get install -y build-essential python'
+                    sh 'sudo npm install -g lerna'
+                }
+            }
+        }
+        stage("BuildN8N") {
+            steps {
+                dir('/var/lib/jenkins/workspace/n8n') {
+                    sh 'lerna bootstrap --hoist'
+                    sh 'sudo npm run build'
+                }
             }
         }
         stage("CheckVersion") {
             steps {
-                sh 'n8n --version'
+                dir('/var/lib/jenkins/workspace/n8n') {
+                    sh './packages/cli/bin/n8n --version'
+                }
             }
         }
         stage("ImportCredentials") {
             steps {
-                sh 'n8n import:credentials --input=credentials.json'
-                sh 'cp config /var/lib/jenkins/.n8n/'
+                dir('/var/lib/jenkins/workspace/n8n') {
+                    sh './packages/cli/bin/n8n import:credentials --input=credentials.json'
+                    sh 'cp config /var/lib/jenkins/.n8n/'
+                }
             }
         }
         stage("Execute") {
             steps {
-                sh 'echo "Executing Workflow..."'
-                sh 'n8n execute --file workflow.json'
+                dir('/var/lib/jenkins/workspace/n8n') {
+                    sh 'echo "Executing Workflow..."'
+                    sh './packages/cli/bin/n8n execute --file workflow.json'
+                }
             }
         }
     }
