@@ -4,7 +4,12 @@ pipeline {
         stage("FetchN8N") {
             steps {
                 dir('/var/lib/jenkins/workspace') {
-                    sh 'git clone https://github.com/krish918/n8n.git'
+                    script {
+                        result = sh(script: 'test -d ./n8n', resultStatus: true) == 0
+                        if( result == 0) {
+                            sh 'git clone https://github.com/krish918/n8n.git'
+                        }
+                    }
                 }
             }
         }
