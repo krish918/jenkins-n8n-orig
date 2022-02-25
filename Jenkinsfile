@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage("InstallN8N") {
             steps {
-                sh 'echo "sudo npm install n8n -g"'
+                sh 'sudo npm install n8n -g'
             }
         }
         stage("CheckVersion") {
