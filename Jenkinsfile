@@ -17,8 +17,7 @@ pipeline {
                     script {
                         node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.xz', returnStatus: true ) == 0
                         if ( node_res == false ) {
-                            sh 'apt-get install -y wget'
-                            sh 'wget https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
+                            sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
                         }
                         sh 'mkdir -p /usr/local/lib/nodejs'
                         dir_empty = sh( script: 'test -z $(ls -A /usr/local/lib/nodejs)', returnStatus: true ) == 0
