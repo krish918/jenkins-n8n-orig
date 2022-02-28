@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage("Build N8N") {
             steps {
-                dir('/var/lib/jenkins/workspace') {
+                dir("${JENKINS_HOME}/workspace") {
                     script {
                         result = sh( script: 'test -d ./n8n', returnStatus: true ) == 0
                         if ( result == false ) {
@@ -13,15 +13,17 @@ pipeline {
                         }
                     }
                 }
-                dir('/var/lib/jenkins/workspace') {
+                dir("${JENKINS_HOME}/workspace") {
                     script {
                         node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.xz', returnStatus: true ) == 0
                         if ( node_res == false ) {
+                            sh 'sudo apt-get install -y wget'
                             sh 'wget https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
                         }
                         sh 'sudo mkdir -p /usr/local/lib/nodejs'
                         dir_empty = sh( script: 'test -z $(ls -A /usr/local/lib/nodejs)', returnStatus: true ) == 0
                         if ( dir_empty == true ) {
+                            sh 'sudo apt-get install -y tar'
                             sh 'sudo tar -xJvf node-v14.18.0-linux-x64.tar.xz -C /usr/local/lib/nodejs'
                         }
                         sh 'sudo apt-get install -y build-essential python'
@@ -38,7 +40,7 @@ pipeline {
                         }
                     }
                 }
-                dir('/var/lib/jenkins/workspace/n8n') {
+                dir("${JENKINS_HOME}/workspace/n8n") {
                     script {
                         UPDATED = false
                         if ( CLONE == false ) {
@@ -62,14 +64,14 @@ pipeline {
         
         stage("ImportCredentials") {
             steps {
-                sh '/var/lib/jenkins/workspace/n8n/packages/cli/bin/n8n import:credentials --input=credentials.json'
-                sh 'cp config /var/lib/jenkins/.n8n/'
+                sh "${JENKINS_HOME}/workspace/n8n/packages/cli/bin/n8n import:credentials --input=credentials.json"
+                sh 'cp config ${JENKINS_HOME}/.n8n/'
             }
         }
         stage("Execute") {
             steps {
                 sh 'echo "Executing Workflow..."'
-                sh '/var/lib/jenkins/workspace/n8n/packages/cli/bin/n8n execute --file workflow.json'
+                sh "${JENKINS_HOME}/workspace/n8n/packages/cli/bin/n8n execute --file workflow.json"
             }
         }
     }
