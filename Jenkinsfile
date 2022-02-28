@@ -25,7 +25,6 @@ pipeline {
                         if ( !fileExists ('./setup.conf') ) {
 
                             SETUP_NEEDED = true
-                            sh 'which /usr/bin/npm'
                             if ( !fileExists( PROXY_FILE ) ) {
                                 sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> "$PROXY_FILE"'           
                             }
