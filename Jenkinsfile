@@ -15,6 +15,9 @@ pipeline {
                 }
                 dir("${JENKINS_HOME}/workspace") {
                     script {
+                        if ( !fileExists( '/etc/apt/apt.conf.d/00-proxy' ) ) {
+                            sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> /etc/apt/apt.conf.d/00-proxy'           
+                        }
                         sh 'apt-get update -y'
                         node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.gz', returnStatus: true ) == 0
                         if ( node_res == false ) {
