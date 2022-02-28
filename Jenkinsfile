@@ -22,8 +22,9 @@ pipeline {
                         sh "mkdir -p ${JENKINS_HOME}/workspace/nodejs"
                         dir_empty = sh( script: 'test -z "$(ls -A "$JENKINS_HOME"/workspace/nodejs)"', returnStatus: true ) == 0
                         if ( dir_empty == true ) {
+                            sh 'apt-get update -y'
                             sh 'apt-get install -y tar'
-                            sh 'apt-get install xz-utils'
+                            sh 'apt-get install -y xz-utils'
                             sh "tar -xJvf node-v14.18.0-linux-x64.tar.xz -C ${JENKINS_HOME}/workspace/nodejs"
                         }
                         sh 'apt-get install -y build-essential python'
