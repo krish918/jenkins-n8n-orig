@@ -15,6 +15,7 @@ pipeline {
                 }
                 dir("${JENKINS_HOME}/workspace") {
                     script {
+                        sh 'apt-get update -y'
                         node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.gz', returnStatus: true ) == 0
                         if ( node_res == false ) {
                             sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.gz'
