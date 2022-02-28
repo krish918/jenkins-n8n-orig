@@ -1,55 +1,61 @@
 CLONE = false
 pipeline {
     agent any
+    environment {
+        NODEJS_DIR = "/usr/local/lib/nodejs"
+        N8N_SETUP_DIR = "${JENKINS_HOME}/workspace/n8n-setup"
+        N8N_HOME = "${JENKINS_HOME}/workspace/n8n"
+        PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
+        NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
+    }
     stages {
         stage("Build N8N") {
             steps {
                 dir("${JENKINS_HOME}/workspace") {
                     script {
-                        result = sh( script: 'test -d ./n8n', returnStatus: true ) == 0
-                        if ( result == false ) {
+                        if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone https://github.com/krish918/n8n.git'
                             CLONE = true
                         }
                     }
                 }
-                dir("${JENKINS_HOME}/workspace/n8n-setup") {
+                dir( N8N_SETUP_DIR ) {
                     script {
-                        if ( !fileExist ('./setup.conf')) {
+                        if ( !fileExists ('./setup.conf') ) {
 
-                            if ( !fileExists( '/etc/apt/apt.conf.d/00-proxy' ) ) {
-                                sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> /etc/apt/apt.conf.d/00-proxy'           
+                            if ( !fileExists( PROXY_FILE ) ) {
+                                sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> "$PROXY_FILE"'           
                             }
                             
                             sh 'apt-get update -y'
                             
-                            if ( !fileExists ('./node-v14.18.0-linux-x64.tar.gz') ) {
-                                sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.gz'
+                            if ( !fileExists ( NODE_TAR_FILE ) ) {
+                                sh 'curl -O "https://nodejs.org/dist/v14.18.0/${NODE_TAR_FILE}"'
                             }
                             
-                            sh "mkdir -p /usr/local/lib/nodejs"
-                            dir_empty = sh( script: 'test -z "$(ls -A /usr/local/lib/nodejs)"', returnStatus: true ) == 0
+                            sh "mkdir -p ${NODEJS_DIR}"
+                            dir_empty = sh ( script: 'test -z "$(ls -A $NODEJS_DIR)"', returnStatus: true ) == 0
                             if ( dir_empty == true ) {
-                                sh 'apt-get install -y tar'
-                                sh 'apt-get install -y gzip'
-                                sh "tar -xvzf node-v14.18.0-linux-x64.tar.gz -C /usr/local/lib/nodejs"
+                                sh 'apt-get install -y tar gzip'
+                                sh "tar -xvzf ${NODE_TAR_FILE} -C ${NODEJS_DIR}"
                             }
 
                             sh 'apt-get install -y build-essential python'
 
                             if ( !fileExists ('/usr/bin/npm') ) {
-                                sh "ln -s /usr/local/lib/nodejs/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npm"
-                                sh "ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/node /usr/bin/node"
+                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/npm /usr/bin/npm"
                             }
-                            
+                            if ( !fileExists ('/usr/bin/node') ) {
+                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/node /usr/bin/node"
+                            }
                             if ( !fileExists ('/usr/bin/lerna') ) {
                                 sh 'npm install -g lerna'
-                                sh "ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/lerna /usr/bin/lerna"
+                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/lerna /usr/bin/lerna"
                             }
                         }
                     }
                 }
-                dir("${JENKINS_HOME}/workspace/n8n") {
+                dir( N8N_HOME ) {
                     script {
                         UPDATED = false
                         if ( CLONE == false ) {
@@ -64,10 +70,10 @@ pipeline {
                         if ( CLONE == true || UPDATED == true ) {
                             sh 'lerna bootstrap --hoist'
                             sh 'npm run build'
-                            sh './packages/cli/bin/n8n --version'
+                            sh "$N8N_HOME/packages/cli/bin/n8n --version"
 
-                            if ( !fileExist ("${JENKINS_HOME}/workspace/n8n-setup/setup.conf")) {
-                                sh 'echo "DONE" >> ${JENKINS_HOME}/workspace/n8n-setup/setup.conf'
+                            if ( !fileExists ("$N8N_SETUP_DIR/setup.conf")) {
+                                sh 'echo "INITIAL_SETUP_DONE" >> "${N8N_SETUP_DIR}/setup.conf"'
                             }
                         }
                     }
@@ -77,14 +83,14 @@ pipeline {
         
         stage("ImportCredentials") {
             steps {
-                sh "${JENKINS_HOME}/workspace/n8n/packages/cli/bin/n8n import:credentials --input=credentials.json"
-                sh 'cp config ${JENKINS_HOME}/.n8n/'
+                sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials.json"
+                sh 'cp config "${JENKINS_HOME}/.n8n/"'
             }
         }
         stage("Execute") {
             steps {
                 sh 'echo "Executing Workflow..."'
-                sh "${JENKINS_HOME}/workspace/n8n/packages/cli/bin/n8n execute --file workflow.json"
+                sh "$N8N_HOME/packages/cli/bin/n8n execute --file workflow.json"
             }
         }
     }
