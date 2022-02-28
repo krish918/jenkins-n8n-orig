@@ -46,7 +46,7 @@ pipeline {
 
                             npm_exist = sh ( script: 'test -e /usr/bin/npm', returnStatus: true ) == 0
                             if ( npm_exist == false ) {
-                                sh "ln -s /usr/bin/npm ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm"
+                                sh "ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npm"
                             }
 
                             node_exist = sh ( script: 'test -e /usr/bin/npm', returnStatus: true ) == 0
