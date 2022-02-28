@@ -19,23 +19,22 @@ pipeline {
                         if ( node_res == false ) {
                             sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
                         }
-                        sh 'mkdir -p /usr/local/lib/nodejs'
-                        dir_empty = sh( script: 'test -z $(ls -A /usr/local/lib/nodejs)', returnStatus: true ) == 0
+                        sh "mkdir -p ${JENKINS_HOME}/workspace/nodejs"
+                        dir_empty = sh( script: "test -z $(ls -A ${JENKINS_HOME}/workspace/nodejs)", returnStatus: true ) == 0
                         if ( dir_empty == true ) {
                             sh 'apt-get install -y tar'
-                            sh 'tar -xJvf node-v14.18.0-linux-x64.tar.xz -C /usr/local/lib/nodejs'
+                            sh "tar -xJvf node-v14.18.0-linux-x64.tar.xz -C ${JENKINS_HOME}/workspace/nodejs"
                         }
                         sh 'apt-get install -y build-essential python'
                         npm_res = sh( script: 'test -f /usr/bin/npm', returnStatus: true ) == 0
                         if ( npm_res == false ) {
-                            sh 'ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npm'
-                            sh 'ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/node /usr/bin/node'
+                            sh "ln -s ${JENKINS_HOME}/workspace/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npm"
+                            sh "ln -s ${JENKINS_HOME}/workspace/nodejs/node-v14.18.0-linux-x64/bin/node /usr/bin/node"
                         }
-            
                         lerna_res = sh( script: 'test -f /usr/bin/lerna', returnStatus: true ) == 0
                         if ( result == false ) {
                             sh 'npm install -g lerna'
-                            sh 'ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/lerna /usr/bin/lerna'
+                            sh "ln -s ${JENKINS_HOME}/workspace/nodejs/node-v14.18.0-linux-x64/bin/lerna /usr/bin/lerna"
                         }
                     }
                 }
