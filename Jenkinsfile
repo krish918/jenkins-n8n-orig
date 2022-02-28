@@ -1,4 +1,4 @@
-CLONE = false
+SETUP_NEEDED = false
 pipeline {
     agent any
     environment {
@@ -16,7 +16,7 @@ pipeline {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone https://github.com/krish918/n8n.git'
-                            CLONE = true
+                            SETUP_NEEDED = true
                         }
                     }
                 }
@@ -24,6 +24,7 @@ pipeline {
                     script {
                         if ( !fileExists ('./setup.conf') ) {
 
+                            SETUP_NEEDED = true
                             if ( !fileExists( PROXY_FILE ) ) {
                                 sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> "$PROXY_FILE"'           
                             }
@@ -43,13 +44,18 @@ pipeline {
 
                             sh 'apt-get install -y build-essential python'
 
-                            if ( !fileExists ('/usr/bin/npm') ) {
+                            npm_exist = sh ( script: 'test -e /usr/bin/npm', returnStatus: true ) == 0
+                            if ( npm_exist == false ) {
                                 sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
                             }
-                            if ( !fileExists ('/usr/bin/node') ) {
-                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/node /usr/bin/node"
+
+                            node_exist = sh ( script: 'test -e /usr/bin/npm', returnStatus: true ) == 0
+                            if ( npm_exist == false ) {
+                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
                             }
-                            if ( !fileExists ('/usr/bin/lerna') ) {
+
+                            lerna_exist = sh ( script: 'test -e /usr/bin/lerna', returnStatus: true ) == 0
+                            if ( lerna_exist == false ) {
                                 sh 'npm install -g lerna'
                                 sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
                             }
@@ -59,7 +65,7 @@ pipeline {
                 dir( N8N_HOME ) {
                     script {
                         UPDATED = false
-                        if ( CLONE == false ) {
+                        if ( SETUP_NEEDED == false ) {
                             sh 'git remote update'
                             LOCAL = sh( script: 'git rev-parse @', returnStdout: true ).trim()
                             REMOTE = sh( script: 'git rev-parse @{u}', returnStdout: true ).trim()
@@ -68,7 +74,7 @@ pipeline {
                                 UPDATED = true
                             }
                         }
-                        if ( CLONE == true || UPDATED == true ) {
+                        if ( SETUP_NEEDED == true || UPDATED == true ) {
                             sh 'lerna bootstrap --hoist'
                             sh 'npm run build'
                             sh "$N8N_HOME/packages/cli/bin/n8n --version"
