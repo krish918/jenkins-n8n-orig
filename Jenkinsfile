@@ -43,10 +43,11 @@ pipeline {
                             }
 
                             sh 'apt-get install -y build-essential python'
+                            sh 'rm /usr/bin/npm'
 
-                            npm_exist = sh ( script: 'test -e /usr/bin/npmx', returnStatus: true ) == 0
+                            npm_exist = sh ( script: 'test -e /usr/bin/npm', returnStatus: true ) == 0
                             if ( npm_exist == false ) {
-                                sh "ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npmx"
+                                sh "ln -s /usr/local/lib/nodejs/node-v14.18.0-linux-x64/bin/npm /usr/bin/npm"
                             }
 
                             node_exist = sh ( script: 'test -e /usr/bin/node', returnStatus: true ) == 0
