@@ -15,11 +15,11 @@ pipeline {
         }
         stage("Build N8N") {
             steps {
-                dir('/var/lib/jenkins') {
+                dir('/var/lib/jenkins/workspace') {
                     script {
                         node_res = sh(script: 'test -e /usr/lib/jenkins/node-v14.18.0-linux-x64.tar.xz', returnStatus: true) == 0
                         if ( node_res == false ) {
-                             sh 'wget https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
+                            sh 'wget https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
                         }
                         sh 'sudo mkdir -p /usr/local/lib/nodejs'
                         dir_empty = sh(script: 'test -z $(ls -A /usr/local/lib/nodejs)', returnStatus: true) == 0
@@ -39,7 +39,6 @@ pipeline {
                         }
                     }
                 }
-
                 dir('/var/lib/jenkins/workspace/n8n') {
                     sh 'lerna bootstrap --hoist'
                     sh 'sudo npm run build'
