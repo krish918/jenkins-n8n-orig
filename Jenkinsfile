@@ -68,10 +68,8 @@ pipeline {
         }
         stage("Execute") {
             steps {
-                dir('/var/lib/jenkins/workspace/n8n') {
-                    sh 'echo "Executing Workflow..."'
-                    sh '/var/lib/jenkins/workspace/n8n/packages/cli/bin/n8n execute --file workflow.json'
-                }
+                sh 'echo "Executing Workflow..."'
+                sh '/var/lib/jenkins/workspace/n8n/packages/cli/bin/n8n execute --file workflow.json'
             }
         }
     }
