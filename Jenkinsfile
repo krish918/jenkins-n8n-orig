@@ -20,7 +20,7 @@ pipeline {
                             sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
                         }
                         sh "mkdir -p ${JENKINS_HOME}/workspace/nodejs"
-                        dir_empty = sh( script: "test -z $(ls -A $JENKINS_HOME/workspace/nodejs)", returnStatus: true ) == 0
+                        dir_empty = sh( script: 'test -z "$(ls -A "$JENKINS_HOME"/workspace/nodejs)"', returnStatus: true ) == 0
                         if ( dir_empty == true ) {
                             sh 'apt-get install -y tar'
                             sh "tar -xJvf node-v14.18.0-linux-x64.tar.xz -C ${JENKINS_HOME}/workspace/nodejs"
