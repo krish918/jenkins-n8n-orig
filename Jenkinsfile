@@ -7,6 +7,7 @@ pipeline {
         N8N_HOME = "${JENKINS_HOME}/workspace/n8n"
         PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
+        NODE_VER_BUILD = "node-v14.18.0-linux-x64"
     }
     stages {
         stage("Build N8N") {
@@ -43,14 +44,14 @@ pipeline {
                             sh 'apt-get install -y build-essential python'
 
                             if ( !fileExists ('/usr/bin/npm') ) {
-                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/npm /usr/bin/npm"
+                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
                             }
                             if ( !fileExists ('/usr/bin/node') ) {
-                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/node /usr/bin/node"
+                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/node /usr/bin/node"
                             }
                             if ( !fileExists ('/usr/bin/lerna') ) {
                                 sh 'npm install -g lerna'
-                                sh "ln -s ${NODEJS_DIR}/${NODE_TAR_FILE}/bin/lerna /usr/bin/lerna"
+                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
                             }
                         }
                     }
