@@ -15,17 +15,17 @@ pipeline {
                 }
                 dir("${JENKINS_HOME}/workspace") {
                     script {
-                        node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.xz', returnStatus: true ) == 0
+                        node_res = sh( script: 'test -e ./node-v14.18.0-linux-x64.tar.gz', returnStatus: true ) == 0
                         if ( node_res == false ) {
-                            sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.xz'
+                            sh 'curl -O https://nodejs.org/dist/v14.18.0/node-v14.18.0-linux-x64.tar.gz'
                         }
                         sh "mkdir -p ${JENKINS_HOME}/workspace/nodejs"
                         dir_empty = sh( script: 'test -z "$(ls -A "$JENKINS_HOME"/workspace/nodejs)"', returnStatus: true ) == 0
                         if ( dir_empty == true ) {
                             sh 'apt-get update -y'
                             sh 'apt-get install -y tar'
-                            sh 'apt-get install -y xz-utils'
-                            sh "tar -xJvf node-v14.18.0-linux-x64.tar.xz -C ${JENKINS_HOME}/workspace/nodejs"
+                            sh 'apt-get install -y gzip'
+                            sh "tar -xvzf node-v14.18.0-linux-x64.tar.gz -C ${JENKINS_HOME}/workspace/nodejs"
                         }
                         sh 'apt-get install -y build-essential python'
                         npm_res = sh( script: 'test -f /usr/bin/npm', returnStatus: true ) == 0
