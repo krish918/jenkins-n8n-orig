@@ -18,7 +18,6 @@ pipeline {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone https://github.com/krish918/n8n.git'
-                            sh 'chown -R $(whoami) "$N8N_HOME"'
                             SETUP_NEEDED = true
                         }
                     }
