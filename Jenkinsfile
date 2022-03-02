@@ -95,7 +95,7 @@ pipeline {
         stage("ImportCredentials") {
             steps {
                 sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials.json"
-                sh 'cp config "${JENKINS_HOME}/.n8n/"'
+                sh 'cp config "${HOME}/.n8n/"'
             }
         }
         stage("Execute") {
