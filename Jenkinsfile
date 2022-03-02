@@ -12,6 +12,7 @@ pipeline {
         DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
 
         PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
+        VERIFY_PEER_CONFIG_FILE = "/etc/apt/apt.conf.d/99-verify-peer"
 
         __REPO_N8N = "https://github.com/krish918/n8n.git"
         __REPO_MICROSERVICE = "https://github.com/krish918/dl-streamer-setup.git"
@@ -102,15 +103,17 @@ pipeline {
                 script {
                     docker_exist = sh (script : 'command -v docker', returnStatus : true) == 0
                     if ( !docker_exist ) {
-                        /*
+                        
                         sh 'apt-get install -y ca-certificates gnupg lsb-release'
+                        sh 'echo "Acquire { https::Verify-Peer \\"false\\"" }" >> "$VERIFY_PEER_CONFIG_FILE"'
                         sh 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
                         sh 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null'
                         sh 'apt-get update -y'
                         sh 'apt-get install -y docker-ce docker-ce-cli containerd.io'
                         sh 'usermod -aG docker "$(whoami)"'
-                        */
+                       
                         // trying to install docker using packages
+                        /*
                         dir ( N8N_SETUP_DIR ) {
                             sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce_20.10.10~3-0~debian-bullseye_amd64.deb"'
                             sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce-cli_20.10.10~3-0~debian-bullseye_amd64.deb"'
@@ -118,6 +121,7 @@ pipeline {
                             sh 'dpkg -i *.deb'
                             sh 'usermod -aG docker "$(whoami)"'
                         }
+                        */
                         
                     }
 
