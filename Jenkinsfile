@@ -89,14 +89,10 @@ pipeline {
             }
         }
         
-        stage("ImportCredentials") {
+        stage("Import & Execute Workflow") {
             steps {
                 sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials.json"
                 sh 'cp config "${HOME}/.n8n/"'
-            }
-        }
-        stage("Execute") {
-            steps {
                 sh 'echo "Executing Workflow..."'
                 sh "$N8N_HOME/packages/cli/bin/n8n execute --file workflow.json"
             }
