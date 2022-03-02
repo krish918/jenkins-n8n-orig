@@ -12,6 +12,7 @@ pipeline {
     stages {
         stage("Build N8N") {
             steps {
+                sh 'whoami'
                 dir("${JENKINS_HOME}/workspace") {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
