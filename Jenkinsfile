@@ -18,6 +18,7 @@ pipeline {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone https://github.com/krish918/n8n.git'
+                            sh 'chown -R $(whoami) "$N8N_HOME"'
                             SETUP_NEEDED = true
                         }
                     }
@@ -42,6 +43,7 @@ pipeline {
                             if ( dir_empty == true ) {
                                 sh 'apt-get install -y tar gzip'
                                 sh "tar -xvzf ${NODE_TAR_FILE} -C ${NODEJS_DIR}"
+                                sh 'chown -R $(whoami) "$NODEJS_DIR"' 
                             }
 
                             sh 'apt-get install -y build-essential python'
