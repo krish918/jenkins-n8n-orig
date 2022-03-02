@@ -102,12 +102,23 @@ pipeline {
                 script {
                     docker_exist = sh (script : 'command -v docker', returnStatus : true) == 0
                     if ( !docker_exist ) {
+                        /*
                         sh 'apt-get install -y ca-certificates gnupg lsb-release'
                         sh 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
                         sh 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null'
                         sh 'apt-get update -y'
                         sh 'apt-get install -y docker-ce docker-ce-cli containerd.io'
                         sh 'usermod -aG docker "$(whoami)"'
+                        */
+                        // trying to install docker using packages
+                        dir ( N8N_SETUP_DIR ) {
+                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce_20.10.10~3-0~debian-bullseye_amd64.deb"'
+                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce-cli_20.10.10~3-0~debian-bullseye_amd64.deb"'
+                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/containerd.io_1.4.12-1_amd64.deb"'
+                            sh 'dpkg -i *.deb'
+                            sh 'usermod -aG docker "$(whoami)"'
+                        }
+                        
                     }
 
                     docker_compose = sh (script : 'command -v docker-compose', returnStatus : true) == 0
