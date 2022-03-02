@@ -8,6 +8,7 @@ pipeline {
         PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
         NODE_VER_BUILD = "node-v14.18.0-linux-x64"
+        DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
     }
     stages {
         stage("Build N8N") {
@@ -32,6 +33,7 @@ pipeline {
                             sh 'apt-get update -y'
                             
                             if ( !fileExists ( NODE_TAR_FILE ) ) {
+                                sh 'apt-get install -y curl'
                                 sh 'curl -O "https://nodejs.org/dist/v14.18.0/${NODE_TAR_FILE}"'
                             }
                             
@@ -89,6 +91,38 @@ pipeline {
             }
         }
         
+        stage("Setup Microservices") {
+            steps {
+                script {
+                    docker_exist = sh (script : 'command -v docker', returnStatus : true) == 0
+                    if ( !docker_exist ) {
+                        sh 'apt-get install -y ca-certificates gnupg lsb-release'
+                        sh 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
+                        sh 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+                        sh 'apt-get update -y'
+                        sh 'apt-get install -y docker-ce docker-ce-cli containerd.io'
+                        sh "usermod -aG docker $(whoami)"
+                    }
+
+                    docker_compose = sh (script : 'command -v docker-compose', returnStatus : true) == 0
+                    if ( !docker_compose ) {
+                        sh 'curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+                        sh 'chmod +x /usr/local/bin/docker-compose'
+                        sh 'ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'
+                    }
+
+                    if ( !fileExists (DL_STREAMER_DIR) ) {
+                        dir ( N8N_SETUP_DIR ) {
+                            sh 'git clone https://github.com/krish918/dl-streamer-setup.git'
+                        }
+                    }
+                        
+                    dir ( DL_STREAMER_DIR ) {
+                        sh 'docker-compose up'
+                    }
+                }
+            }
+        }
         stage("Import & Execute Workflow") {
             steps {
                 sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials.json"
