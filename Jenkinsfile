@@ -3,12 +3,15 @@ pipeline {
     agent any
     environment {
         NODEJS_DIR = "/usr/local/lib/nodejs"
-        N8N_SETUP_DIR = "${JENKINS_HOME}/workspace/n8n-setup"
-        N8N_HOME = "${JENKINS_HOME}/workspace/n8n"
-        PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
         NODE_VER_BUILD = "node-v14.18.0-linux-x64"
+
+        N8N_SETUP_DIR = "${JENKINS_HOME}/workspace/n8n-setup"
+        N8N_HOME = "${JENKINS_HOME}/workspace/n8n"
+
         DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
+
+        PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
 
         __REPO_N8N = "https://github.com/krish918/n8n.git"
         __REPO_MICROSERVICE = "https://github.com/krish918/dl-streamer-setup.git"
