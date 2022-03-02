@@ -118,7 +118,7 @@ pipeline {
                     }
                         
                     dir ( DL_STREAMER_DIR ) {
-                        sh 'docker-compose up'
+                        sh 'docker-compose up -d'
                     }
                 }
             }
