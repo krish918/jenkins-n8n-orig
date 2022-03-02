@@ -9,6 +9,9 @@ pipeline {
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
         NODE_VER_BUILD = "node-v14.18.0-linux-x64"
         DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
+
+        __REPO_N8N = "https://github.com/krish918/n8n.git"
+        __REPO_MICROSERVICE = "https://github.com/krish918/dl-streamer-setup.git"
     }
     stages {
         stage("Build N8N") {
@@ -16,7 +19,7 @@ pipeline {
                 dir("${JENKINS_HOME}/workspace") {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
-                            sh 'git clone https://github.com/krish918/n8n.git'
+                            sh 'git clone "$__REPO_N8N"'
                             SETUP_NEEDED = true
                         }
                     }
@@ -113,7 +116,7 @@ pipeline {
 
                     if ( !fileExists (DL_STREAMER_DIR) ) {
                         dir ( N8N_SETUP_DIR ) {
-                            sh 'git clone https://github.com/krish918/dl-streamer-setup.git'
+                            sh 'git clone "$__REPO_MICROSERVICE"'
                         }
                     }
                         
