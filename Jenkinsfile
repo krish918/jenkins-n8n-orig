@@ -1,4 +1,4 @@
-SETUP_NEEDED = false
+BUILD_NEEDED = false
 pipeline {
     agent {
         node {
@@ -22,11 +22,15 @@ pipeline {
     stages {
         stage("Build N8N") {
             steps {
+                // We will clone and setup N8N one level above the CWD
                 dir("${HOME}/workspace") {
                     script {
+                         // check if N8N directory in the workspace already exists, otherwise clone it
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone "$__REPO_N8N"'
-                            SETUP_NEEDED = true
+                            
+                            // if we had cloned it, then it needs to be built
+                            BUILD_NEEDED = true
                         }
                     }
                 }
@@ -34,7 +38,7 @@ pipeline {
                     script {
                         if ( !fileExists ('./setup.conf') ) {
 
-                            SETUP_NEEDED = true
+                            BUILD_NEEDED = true
                             /*
                             if ( !fileExists( PROXY_FILE ) ) {
                                 sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> "$PROXY_FILE"'           
@@ -79,7 +83,7 @@ pipeline {
                 dir( N8N_HOME ) {
                     script {
                         UPDATED = false
-                        if ( SETUP_NEEDED == false ) {
+                        if ( BUILD_NEEDED == false ) {
                             sh 'git remote update'
                             LOCAL = sh( script: 'git rev-parse @', returnStdout: true ).trim()
                             REMOTE = sh( script: 'git rev-parse @{u}', returnStdout: true ).trim()
@@ -88,7 +92,7 @@ pipeline {
                                 UPDATED = true
                             }
                         }
-                        if ( SETUP_NEEDED == true || UPDATED == true ) {
+                        if ( BUILD_NEEDED == true || UPDATED == true ) {
                             sh 'lerna bootstrap --hoist'
                             sh 'sudo npm run build'
                             sh "$N8N_HOME/packages/cli/bin/n8n --version"
