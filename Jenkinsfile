@@ -14,8 +14,6 @@ pipeline {
         N8N_SETUP_DIR = "${HOME}/workspace/n8n-setup"
         N8N_HOME = "${HOME}/workspace/n8n"
 
-        //DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
-
         //PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
         //VERIFY_PEER_CONFIG_FILE = "/etc/apt/apt.conf.d/99-verify-peer"
 
