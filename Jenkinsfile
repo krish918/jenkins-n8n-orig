@@ -83,11 +83,12 @@ pipeline {
                             
                             sh 'sudo apt-get install -y build-essential python'
 
-                            /***
+                            /*
                                 If npm and node commands are not already available, then 
                                 make them available via a symbolic link to the nodejs version, which we just 
                                 extracted in NODEJS_DIR.
-                             ***/
+                            */
+                            
                             npm_exist = sh ( script: 'test -L /usr/bin/npm', returnStatus: true ) == 0
                             if ( npm_exist == false ) {
                                 sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
