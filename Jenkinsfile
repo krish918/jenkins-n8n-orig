@@ -125,7 +125,7 @@ pipeline {
                         sh 'sudo usermod -aG docker "$(whoami)"'
                     }
                     
-                    sh 'service docker start'
+                    sh 'sudo systemctl start docker'
 
                     docker_compose = sh (script : 'command -v docker-compose', returnStatus : true) == 0
                     if ( !docker_compose ) {
