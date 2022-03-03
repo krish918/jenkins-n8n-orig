@@ -23,7 +23,7 @@ pipeline {
         stage("Build N8N") {
             steps {
                 
-                // We will clone and setup N8N one level above the current  working dir
+                // We will clone and setup N8N one level above the current working dir
                 
                 dir("${HOME}/workspace") {
                     script {
