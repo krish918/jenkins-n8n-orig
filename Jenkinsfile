@@ -28,12 +28,12 @@ pipeline {
                 dir("${HOME}/workspace") {
                     script {
                          
-                        // check if N8N directory already exists in the workspace , otherwise clone the N8N repo
+                        // Check if N8N directory already exists in the workspace , otherwise clone the N8N repo
                         
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone "$__REPO_N8N"'
                             
-                            // if it is cloned, then it needs to be built
+                            // If cloned, then it needs to be built
                             BUILD_NEEDED = true
                         }
                     }
@@ -50,7 +50,7 @@ pipeline {
 
                             BUILD_NEEDED = true
                             
-                            // commenting out, as we don't need to setup proxy on aws node.
+                            // Commenting out, as we don't need to setup proxy on aws node.
                             /*
                             if ( !fileExists( PROXY_FILE ) ) {
                                 sh 'echo "Acquire::http::proxy \\"http://proxy-dmz.intel.com:911\\";\nAcquire::https::proxy \\"http://proxy-dmz.intel.com:912\\";" >> "$PROXY_FILE"'           
@@ -59,7 +59,7 @@ pipeline {
                             
                             sh 'sudo apt-get update -y'
                             
-                            // if nodejs tarball is not available, then download it.
+                            // If nodejs tarball is not available, then download it.
                             
                             if ( !fileExists ( NODE_TAR_FILE ) ) {
                                 sh 'sudo apt-get install -y curl'
@@ -138,7 +138,7 @@ pipeline {
                             sh 'sudo npm run build'
                             sh "$N8N_HOME/packages/cli/bin/n8n --version"
                             
-                            // create a dummy file in N8N_SETUP_DIR which signals that N8N is built successfully.
+                            // Create a dummy file in N8N_SETUP_DIR which signals that N8N is built successfully.
                             
                             if ( !fileExists ("$N8N_SETUP_DIR/setup.conf")) {
                                 sh 'echo "INITIAL_SETUP_DONE" >> "${N8N_SETUP_DIR}/setup.conf"'
@@ -154,7 +154,7 @@ pipeline {
                 script {
                     
                     /*
-                    check whether docker exists, otherwise setup docker on the current node.
+                    Check whether docker exists, otherwise setup docker on the current node.
                     */
                     
                     docker_exist = sh (script : 'command -v docker', returnStatus : true) == 0
@@ -169,13 +169,13 @@ pipeline {
                         sh 'sudo apt-get update -y'
                         sh 'sudo apt-get install -y docker-ce docker-ce-cli containerd.io'
                         
-                        // check if a docker group exists, otherwise create it.
+                        // Check if a docker group exists, otherwise create it.
                         docker_grp = sh (script : 'sudo getent group docker', returnStatus : true ) == 0
                         if ( !docker_grp ) {
                             sh 'sudo groupadd docker'   
                         }
                         
-                        // add current user to docker group to allow running docker without sudo
+                        // Add current user to docker group to allow running docker without sudo
                         sh 'sudo usermod -aG docker "$(whoami)"'
                     }
                     
