@@ -1,6 +1,10 @@
 SETUP_NEEDED = false
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'aws-ec2'
+        }
+    }
     environment {
         NODEJS_DIR = "/usr/local/lib/nodejs"
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
