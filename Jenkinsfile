@@ -10,8 +10,8 @@ pipeline {
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
         NODE_VER_BUILD = "node-v14.18.0-linux-x64"
 
-        N8N_SETUP_DIR = "${JENKINS_HOME}/workspace/n8n-setup"
-        N8N_HOME = "${JENKINS_HOME}/workspace/n8n"
+        N8N_SETUP_DIR = "${HOME}/workspace/n8n-setup"
+        N8N_HOME = "${HOME}/workspace/n8n"
 
         DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
 
@@ -24,7 +24,7 @@ pipeline {
     stages {
         stage("Build N8N") {
             steps {
-                dir("${JENKINS_HOME}/workspace") {
+                dir("${HOME}/workspace") {
                     script {
                         if ( !fileExists (N8N_HOME) ) {
                             sh 'git clone "$__REPO_N8N"'
