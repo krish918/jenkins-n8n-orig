@@ -9,11 +9,12 @@ pipeline {
         NODEJS_DIR = "/usr/local/lib/nodejs"
         NODE_TAR_FILE = "node-v14.18.0-linux-x64.tar.gz"
         NODE_VER_BUILD = "node-v14.18.0-linux-x64"
+        NODE_DIST = "https://nodejs.org/dist/v14.18.0/${NODE_TAR_FILE}"
 
         N8N_SETUP_DIR = "${HOME}/workspace/n8n-setup"
         N8N_HOME = "${HOME}/workspace/n8n"
 
-        DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
+        //DL_STREAMER_DIR = "${N8N_SETUP_DIR}/dl-streamer-setup"
 
         //PROXY_FILE = "/etc/apt/apt.conf.d/00-proxy"
         //VERIFY_PEER_CONFIG_FILE = "/etc/apt/apt.conf.d/99-verify-peer"
@@ -46,7 +47,7 @@ pipeline {
                             
                             if ( !fileExists ( NODE_TAR_FILE ) ) {
                                 sh 'sudo apt-get install -y curl'
-                                sh 'curl -O "https://nodejs.org/dist/v14.18.0/${NODE_TAR_FILE}"'
+                                sh 'curl -O "${NODE_DIST}"'
                             }
                             
                             sh "sudo mkdir -p ${NODEJS_DIR}"
