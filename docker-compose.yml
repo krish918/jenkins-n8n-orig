@@ -1,0 +1,30 @@
+version: "3"
+services:
+  intelvas:
+    image: intel/dlstreamer-pipeline-server:latest
+    container_name: dlstreamer
+    privileged: true
+    ports:
+      - '8080:8080'
+      - '8554:8554'
+    networks:
+      - app_network
+    volumes:
+      - /tmp:/tmp
+    environment:
+      - ENABLE_RTSP=true
+      - RTSP_PORT=8554
+      
+  broker:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt_broker
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - '1883:1883'
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: "bridge"
