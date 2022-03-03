@@ -19,7 +19,6 @@ pipeline {
         //VERIFY_PEER_CONFIG_FILE = "/etc/apt/apt.conf.d/99-verify-peer"
 
         __REPO_N8N = "https://github.com/krish918/n8n.git"
-        __REPO_MICROSERVICE = "https://github.com/krish918/dl-streamer-setup.git"
     }
     stages {
         stage("Build N8N") {
@@ -135,13 +134,7 @@ pipeline {
                         sh 'sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'
                     }
 
-                    if ( !fileExists (DL_STREAMER_DIR) ) {
-                        dir ( N8N_SETUP_DIR ) {
-                            sh 'git clone "$__REPO_MICROSERVICE"'
-                        }
-                    }
-                        
-                    dir ( DL_STREAMER_DIR ) {
+                    if ( fileExists ('docker-compose.yml') ) {
                         sh 'sudo docker-compose up -d'
                     }
                 }
