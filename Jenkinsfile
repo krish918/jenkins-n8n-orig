@@ -43,37 +43,37 @@ pipeline {
                             }
                             */
                             
-                            sh 'apt-get update -y'
+                            sh 'sudo apt-get update -y'
                             
                             if ( !fileExists ( NODE_TAR_FILE ) ) {
-                                sh 'apt-get install -y curl'
+                                sh 'sudo apt-get install -y curl'
                                 sh 'curl -O "https://nodejs.org/dist/v14.18.0/${NODE_TAR_FILE}"'
                             }
                             
-                            sh "mkdir -p ${NODEJS_DIR}"
+                            sh "sudo mkdir -p ${NODEJS_DIR}"
                             dir_empty = sh ( script: 'test -z "$(ls -A $NODEJS_DIR)"', returnStatus: true ) == 0
                             if ( dir_empty == true ) {
-                                sh 'apt-get install -y tar gzip'
-                                sh "tar -xvzf ${NODE_TAR_FILE} -C ${NODEJS_DIR}"
-                                sh 'chown -R $(whoami) "$NODEJS_DIR"' 
+                                sh 'sudo apt-get install -y tar gzip'
+                                sh "sudo tar -xvzf ${NODE_TAR_FILE} -C ${NODEJS_DIR}"
+                                sh 'sudo chown -R $(whoami) "$NODEJS_DIR"' 
                             }
 
-                            sh 'apt-get install -y build-essential python'
+                            sh 'sudo apt-get install -y build-essential python'
 
                             npm_exist = sh ( script: 'test -L /usr/bin/npm', returnStatus: true ) == 0
                             if ( npm_exist == false ) {
-                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
+                                sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/npm /usr/bin/npm"
                             }
 
                             node_exist = sh ( script: 'test -L /usr/bin/node', returnStatus: true ) == 0
                             if ( npm_exist == false ) {
-                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/node /usr/bin/node"
+                                sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/node /usr/bin/node"
                             }
 
                             lerna_exist = sh ( script: 'test -L /usr/bin/lerna', returnStatus: true ) == 0
                             if ( lerna_exist == false ) {
-                                sh 'npm install -g lerna'
-                                sh "ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
+                                sh 'sudo npm install -g lerna'
+                                sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
                             }
                         }
                     }
@@ -92,7 +92,7 @@ pipeline {
                         }
                         if ( SETUP_NEEDED == true || UPDATED == true ) {
                             sh 'lerna bootstrap --hoist'
-                            sh 'npm run build'
+                            sh 'sudo npm run build'
                             sh "$N8N_HOME/packages/cli/bin/n8n --version"
 
                             if ( !fileExists ("$N8N_SETUP_DIR/setup.conf")) {
@@ -110,39 +110,29 @@ pipeline {
                     docker_exist = sh (script : 'command -v docker', returnStatus : true) == 0
                     if ( !docker_exist ) {
                         
-                        sh 'apt-get install -y ca-certificates gnupg lsb-release'
+                        sh 'sudo apt-get install -y ca-certificates gnupg lsb-release'
+
                         //sh 'echo "Acquire { https::Verify-Peer \\"false\\" }" >> "$VERIFY_PEER_CONFIG_FILE"'
-                        sh 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
-                        sh 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null'
-                        sh 'apt-get update -y'
-                        sh 'apt-get install -y docker-ce docker-ce-cli containerd.io'
+
+                        sh 'curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
+                        sh 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+                        sh 'sudo apt-get update -y'
+                        sh 'sudo apt-get install -y docker-ce docker-ce-cli containerd.io'
                         
-                        docker_grp = sh (script : 'getent group docker', returnStatus : true ) == 0
+                        docker_grp = sh (script : 'sudo getent group docker', returnStatus : true ) == 0
                         if ( !docker_grp ) {
-                            sh 'groupadd docker'   
+                            sh 'sudo groupadd docker'   
                         }
-                        sh 'usermod -aG docker "$(whoami)"'
-                       
-                        // trying to install docker using packages
-                        /*
-                        dir ( N8N_SETUP_DIR ) {
-                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce_20.10.10~3-0~debian-bullseye_amd64.deb"'
-                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/docker-ce-cli_20.10.10~3-0~debian-bullseye_amd64.deb"'
-                            sh 'curl -O "https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/containerd.io_1.4.12-1_amd64.deb"'
-                            sh 'dpkg -i *.deb'
-                            sh 'usermod -aG docker "$(whoami)"'
-                        }
-                        */
-                        
+                        sh 'sudo usermod -aG docker "$(whoami)"'
                     }
                     
                     sh 'service docker start'
 
                     docker_compose = sh (script : 'command -v docker-compose', returnStatus : true) == 0
                     if ( !docker_compose ) {
-                        sh 'curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
-                        sh 'chmod +x /usr/local/bin/docker-compose'
-                        sh 'ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'
+                        sh 'sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+                        sh 'sudo chmod +x /usr/local/bin/docker-compose'
+                        sh 'sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'
                     }
 
                     if ( !fileExists (DL_STREAMER_DIR) ) {
@@ -152,7 +142,7 @@ pipeline {
                     }
                         
                     dir ( DL_STREAMER_DIR ) {
-                        sh 'docker-compose up -d'
+                        sh 'sudo docker-compose up -d'
                     }
                 }
             }
