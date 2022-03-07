@@ -195,7 +195,12 @@ pipeline {
                     // If docker-compose file exists in the current repo, spin-up the services.
                     
                     if ( fileExists ('docker-compose.yml') ) {
-                        sh 'sudo -E docker-compose up -d'
+                        
+                        // If services are already up then do not try to docke-compose again.
+                        
+                        if ( sh (script : 'docker-compose ps -q', returnStatus : true) == 1 ) {
+                            sh 'sudo -E docker-compose up -d'   
+                        }
                     }
                 }
             }
