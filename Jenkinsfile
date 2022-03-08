@@ -214,7 +214,7 @@ pipeline {
                 
                 // Import credentials from this repo into N8N
                 
-                sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials.json"
+                sh "$N8N_HOME/packages/cli/bin/n8n import:credentials --input=credentials-2.json"
                 
                 // Copy the encryption key (needed to decrypt credentials) into .n8n directory of current user's home. 
                 
@@ -223,7 +223,7 @@ pipeline {
                 // EXECUTE THE WORKFLOW
                 
                 sh 'echo "Executing Workflow..."'
-                sh "$N8N_HOME/packages/cli/bin/n8n execute --file workflow.json"
+                sh "$N8N_HOME/packages/cli/bin/n8n execute --file workflow-2.json"
             }
         }
     }
