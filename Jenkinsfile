@@ -198,9 +198,7 @@ pipeline {
                         
                         // But if services are already up, then do not run docker-compose.
                         
-                        if ( sh (script : 'docker-compose ps -q', returnStatus : true) == 1 ) {
-                            sh 'sudo -E docker-compose up -d'   
-                        }
+                        sh 'sudo docker-compose up -d'
                     }
                 }
             }
