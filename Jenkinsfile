@@ -2,7 +2,7 @@ BUILD_NEEDED = false
 pipeline {
     agent {
         node {
-            label 'aws-ec2'
+            label 'ubuntu-20'
         }
     }
     environment {
