@@ -201,6 +201,7 @@ pipeline {
                         // But if services are already up, then do not run docker-compose.
                         
                         sh 'sudo docker ps -a'
+                        sh 'sudo fuser 8080/tcp'
                         
                         sh 'sudo docker-compose up -d'
                         
