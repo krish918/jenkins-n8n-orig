@@ -105,7 +105,7 @@ pipeline {
                             lerna_exist = sh ( script: 'test -L /usr/bin/lerna', returnStatus: true ) == 0
                             if ( lerna_exist == false ) {
                                 sh 'sudo npm install -g lerna'
-                                //sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
+                                sh "sudo ln -s ${NODEJS_DIR}/${NODE_VER_BUILD}/bin/lerna /usr/bin/lerna"
                             }
                         }
                     }
