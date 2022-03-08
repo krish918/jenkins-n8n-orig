@@ -5,7 +5,7 @@ services:
     container_name: dlstreamer
     privileged: true
     ports:
-      - '8080:8080'
+      - '8889:8080'
       - '8554:8554'
     networks:
       - app_network
