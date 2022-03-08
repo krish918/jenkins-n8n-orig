@@ -1,0 +1,76 @@
+{
+  "name": "start-vas",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "functionCodeCustom": "let res = []\nfor (item of items) {\n  let lp = \"pipeline_data\";\n  lp = lp + \" \" + \"pipeline_id=\" +item.json.id;\n  res.push({json: {lp_string: lp}});\n}\nreturn res;"
+      },
+      "name": "Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        860,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "pipeline": "person_vehicle_bike",
+        "operation": "start",
+        "uri": "https://github.com/intel-iot-devkit/sample-videos/raw/master/car-detection.mp4?raw=true",
+        "parameters": {}
+      },
+      "name": "IntelVAS",
+      "type": "n8n-nodes-base.intelvas",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "credentials": {
+        "intelVASApi": {
+          "id": "2",
+          "name": "Intel VAS account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "IntelVAS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IntelVAS": {
+      "main": [
+        [
+          {
+            "node": "Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": 1
+}
