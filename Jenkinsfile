@@ -200,6 +200,8 @@ pipeline {
                         sh 'sudo docker-compose ps -q | wc -l'
                         // But if services are already up, then do not run docker-compose.
                         
+                        sh 'sudo docker ps -a'
+                        
                         sh 'sudo docker-compose up -d'
                         
                     }
