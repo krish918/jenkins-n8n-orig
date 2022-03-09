@@ -28,4 +28,3 @@ services:
 networks:
   app_network:
     driver: "bridge"
-    name: "jenkins-n8n-network"
