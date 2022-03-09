@@ -2,7 +2,7 @@ BUILD_NEEDED = false
 pipeline {
     agent {
         node {
-            label 'ubuntu-20'
+            label 'aws-ec2'
         }
     }
     environment {
@@ -202,8 +202,9 @@ pipeline {
                         
                         sh 'sudo docker ps -a'
                         
-                        sh 'sudo docker-compose up -d'
-                        
+                        if ( sh (script : 'sudo docker-compose ps -q' , returnStdout : true ).trim() == "0" ) {
+                            sh 'sudo docker-compose up -d'
+                        }
                     }
                 }
             }
