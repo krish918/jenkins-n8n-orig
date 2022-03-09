@@ -208,7 +208,7 @@ pipeline {
                         sh 'docker ps -a'
                         
                         if ( sh (script : 'docker-compose ps -q | wc -l' , returnStdout : true ).trim() == "0" ) {
-                            sh 'docker-compose up -d'
+                            sh 'docker-compose -p jenkins-n8n up -d'
                         }
                     }
                 }
