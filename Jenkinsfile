@@ -201,15 +201,7 @@ pipeline {
                     // If docker-compose file exists in the current repo, spin-up the services.
                     
                     if ( fileExists ('docker-compose.yml') ) {
-                        
-                        sh 'docker-compose ps -q | wc -l'
-                        // But if services are already up, then do not run docker-compose.
-                        
-                        sh 'docker ps -a'
-                        
-                        if ( sh (script : 'docker-compose ps -q | wc -l' , returnStdout : true ).trim() == "0" ) {
-                            sh 'docker-compose -p jenkins-n8n up -d'
-                        }
+                        sh 'docker-compose -p jenkins-n8n up -d'
                     }
                 }
             }
