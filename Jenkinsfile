@@ -183,7 +183,7 @@ pipeline {
                         
                     }
                     
-                    // start docker daemon
+                    // Start docker daemon
                     
                     sh 'sudo systemctl start docker'
 
