@@ -170,18 +170,18 @@ pipeline {
                         sh 'sudo apt-get update -y'
                         sh 'sudo apt-get install -y docker-ce docker-ce-cli containerd.io'
                         
-                    }
+                        // Check if a docker group exists, otherwise create it.
                     
-                    // Check if a docker group exists, otherwise create it.
-                    
-                    docker_grp = sh (script : 'sudo getent group docker', returnStatus : true ) == 0
-                    if ( !docker_grp ) {
-                        sh 'sudo groupadd docker'   
-                    }
+                        docker_grp = sh (script : 'sudo getent group docker', returnStatus : true ) == 0
+                        if ( !docker_grp ) {
+                            sh 'sudo groupadd docker'   
+                        }
 
-                    // Add current user to docker group to allow running docker without sudo
-                    
-                    sh 'sudo usermod -aG docker "$(whoami)"'
+                        // Add current user to docker group to allow running docker without sudo
+
+                        sh 'sudo usermod -aG docker "$(whoami)"'
+                        
+                    }
                     
                     // start docker daemon
                     
