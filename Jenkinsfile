@@ -202,7 +202,7 @@ pipeline {
                         
                         sh 'sudo docker ps -a'
                         
-                        if ( sh (script : 'sudo docker-compose ps -q' , returnStdout : true ).trim() == "0" ) {
+                        if ( sh (script : 'sudo docker-compose ps -q | wc -l' , returnStdout : true ).trim() == "0" ) {
                             sh 'sudo docker-compose up -d'
                         }
                     }
