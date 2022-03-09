@@ -187,9 +187,7 @@ pipeline {
                     
                     sh 'sudo systemctl start docker'
 
-                    /*
-                        Install docker-compose if not available on current node.
-                    */
+                    // Install docker-compose if not available on current node.
                     
                     docker_compose = sh (script : 'command -v docker-compose', returnStatus : true) == 0
                     if ( !docker_compose ) {
